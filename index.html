@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Tweakaroo Worksheet</title>
+<style>
+/* --- THEME VARIABLES --- */
+:root {
+    --accent: #4f46e5;
+    --bg: #ffffff;
+    --text: #111827;
+    --muted: #f3f4f6;
+    --border: #eeeeee;
+    --card-bg: #fafafa;
+    --input-bg: #ffffff;
+    --input-text: #111827;
+    --tab-inactive: #eeeeee;
+    --icon-color: #6b7280;
+    --plus-bg: #16a34a;
+}
+
+/* Dark Mode Overrides */
+body.dark-mode {
+    --bg: #121212; 
+    --text: #e0e0e0;
+    --muted: #1e1e1e;
+    --border: #333333;
+    --card-bg: #1e1e1e;
+    --input-bg: #2d2d2d;
+    --input-text: #ffffff;
+    --tab-inactive: #2d2d2d;
+    --icon-color: #a3a3a3;
+    --plus-bg: #065f46;
+}
+
+/* --- ANIMATIONS --- */
+@keyframes popIn {
+    0% { transform: scale(0.95); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slideUp {
+    0% { transform: translateY(10px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+body {
+    font-family: Inter, ui-sans-serif, system-ui, Arial;
+    margin: 20px;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--text);
+    background-color: var(--bg);
+    transition: background 0.3s, color 0.3s;
+}
+
+/* --- HEADER & ICONS --- */
+.header-row { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 20px; 
+}
+.btn-cog { 
+    background: none; 
+    border: none; 
+    cursor: pointer; 
+    padding: 8px; 
+    display: flex; 
+    align-items: center; 
+    color: var(--icon-color);
+    transition: color 0.2s, transform 0.5s;
+}
+.btn-cog:hover { color: var(--accent); transform: rotate(90deg); }
+.btn-cog svg { width: 32px; height: 32px; fill: currentColor; }
+
+/* --- TABS BAR --- */
+.tabs { 
+    display: flex; 
+    gap: 8px; 
+    align-items: center; 
+    flex-wrap: wrap; 
+}
+.tab { 
+    padding: 8px 14px; 
+    border-radius: 8px; 
+    background: var(--tab-inactive); 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    color: var(--text); 
+    border: 1px solid var(--border);
+    font-weight: 500;
+    animation: popIn 0.2s ease-out;
+}
+.tab.active { 
+    background: var(--accent); 
+    color: white; 
+    border-color: var(--accent); 
+}
+
+/* --- PLUS BUTTON --- */
+.plus { 
+    padding: 6px 14px;
+    border-radius: 8px; 
+    background: var(--plus-bg); 
+    color: white; 
+    cursor: pointer; 
+    margin-top: 10px; 
+    display: inline-block; 
+    font-weight: 600;
+    font-size: 16px;
+    transition: background 0.3s, transform 0.2s;
+}
+.plus:hover { transform: scale(1.05); }
+
+/* --- COLLECTIONS MENU --- */
+.add-menu { 
+    position: absolute; 
+    top: 60px;
+    left: 0;
+    background: var(--bg); 
+    border: 1px solid var(--border); 
+    border-radius: 10px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25); 
+    display: flex; 
+    z-index: 1000; 
+    min-height: 320px;
+    animation: slideUp 0.2s ease-out;
+    max-width: 90vw;
+}
+.menu-column {
+    padding: 15px;
+    width: 220px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    max-height: 50vh;
+    /* --- HIDE SCROLLBARS --- */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+.menu-column::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+}
+.menu-column:not(:last-child) { border-right: 1px solid var(--border); }
+#subMenuList { display: none; background: var(--muted); border-radius: 0 10px 10px 0; }
+
+.menu-item { 
+    padding: 10px 12px; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    display: flex; 
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    transition: background 0.1s;
+}
+.menu-item:hover { background: var(--accent); color: white; }
+.menu-item.active { background: var(--accent); color: white; }
+
+.search { 
+    width: 100%; 
+    padding: 10px; 
+    margin-bottom: 15px; 
+    border: 1px solid var(--border); 
+    border-radius: 6px; 
+    background: var(--input-bg); 
+    color: var(--input-text); 
+    box-sizing: border-box; 
+}
+
+/* --- CONTENT AREA & FIELDS --- */
+.content { 
+    margin-top: 25px; 
+    padding: 20px; 
+    border: 1px solid var(--border); 
+    border-radius: 12px; 
+    background: var(--card-bg); 
+    min-height: 300px; 
+    animation: slideUp 0.3s ease-out;
+}
+.field { margin-bottom: 15px; }
+.field-row { display: flex; gap: 20px; flex-wrap: wrap; }
+.field-row .field { flex: 1; min-width: 150px; margin-bottom: 15px; }
+
+label { display: block; font-size: 13px; margin-bottom: 8px; font-weight: 600; }
+
+input[type="text"], input[type="tel"], input[type="number"], select { 
+    padding: 10px; 
+    border: 1px solid var(--border); 
+    border-radius: 6px; 
+    width: 100%; 
+    box-sizing: border-box; 
+    background: var(--input-bg); 
+    color: var(--input-text); 
+    font-size: 14px;
+}
+input[type="checkbox"] {
+    width: auto;
+    margin-right: 10px;
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+/* --- TABLES & MODALS --- */
+table { width: 100%; border-collapse: collapse; margin-top: 15px; border: 1px solid var(--border); }
+th, td { padding: 8px; border: 1px solid var(--border); font-size: 13px; text-align: center; }
+td[contenteditable="true"] { background: var(--input-bg); outline: none; }
+
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); display: none; align-items: center; justify-content: center; z-index: 2000; animation: fade 0.2s; }
+.modal-box { background: var(--bg); padding: 25px; border-radius: 12px; width: 90%; max-width: 350px; text-align: center; color: var(--text); border: 1px solid var(--border); animation: popIn 0.3s; }
+.modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+.conditional-section { margin-top: 10px; padding: 10px; border-left: 3px solid var(--accent); background: var(--muted); display: none; text-align: left; animation: slideUp 0.2s; }
+
+/* Buttons */
+button { padding: 12px 18px; border-radius: 8px; border: 0; cursor: pointer; font-weight: 600; font-size: 14px; }
+.btn-primary { background: var(--accent); color: white; }
+.btn-secondary { background: #666; color: white; }
+.btn-white { background: var(--bg); color: #dc2626; border: 1px solid var(--border); }
+.bottom { display: flex; justify-content: flex-end; align-items: center; margin-top: 25px; flex-wrap: wrap; gap: 15px; }
+
+/* --- RESPONSIVE MOBILE TWEAKS --- */
+@media (max-width: 600px) { 
+    .add-menu { flex-direction: column; width: calc(100vw - 40px); left: 0; } 
+    .menu-column { width: 100%; max-height: 250px; }
+    #subMenuList { border-radius: 0 0 10px 10px; }
+    .content { padding: 15px; }
+    .field-row { gap: 10px; }
+}
+</style>
+</head>
+<body>
+
+<div id="settingsModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Settings</h3>
+    <div style="text-align:left; margin-bottom: 20px;">
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-weight: normal;">
+            <input type="checkbox" id="syncToggle"> Auto-sync Floor Plan
+        </label>
+        <p style="font-size:11px; color:var(--icon-color); margin-top:5px;">All new tabs have your latest selected floor plan applied to them.</p>
+        <hr style="border:0; border-top:1px solid var(--border); margin:15px 0;">
+        <label style="font-size:13px; font-weight:600; display:block; margin-bottom:8px;">App Theme</label>
+        <select id="themeSelect">
+            <option value="System">System Default</option>
+            <option value="Light">Light Mode</option>
+            <option value="Dark">Dark Mode</option>
+        </select>
+    </div>
+    <div class="modal-btns">
+      <button id="closeSettings" class="btn-primary" style="width:100%">Done</button>
+    </div>
+  </div>
+</div>
+
+<div id="clearModal" class="modal-overlay">
+  <div class="modal-box">
+    <p style="font-weight:bold;margin:0">This WILL clear everything. Are you sure?</p>
+    <div class="modal-btns">
+      <button id="modalCancel" class="btn-secondary">Cancel</button>
+      <button id="modalOK" class="btn-primary" style="background:#dc2626">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="header-row">
+    <h2 style="margin:0; font-size:24px;">Tweakaroo Worksheet</h2>
+    <button id="openSettings" class="btn-cog" title="Settings">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+            <g transform="translate(1.4 1.4) scale(2.81 2.81)" style="stroke:none;fill:currentColor;">
+                <path d="M 33.75 89.999 c -0.416 0 -0.838 -0.079 -1.245 -0.248 l -10.313 -4.272 c -0.806 -0.333 -1.434 -0.961 -1.769 -1.769 c -0.334 -0.806 -0.334 -1.694 0 -2.501 c 1.404 -3.39 0.665 -7.107 -1.93 -9.702 c -2.595 -2.595 -6.313 -3.336 -9.703 -1.931 c -1.665 0.689 -3.58 -0.103 -4.27 -1.768 L 0.25 57.495 c -0.689 -1.664 0.104 -3.579 1.768 -4.27 C 5.408 51.821 7.514 48.67 7.514 45 c 0 -3.67 -2.106 -6.822 -5.497 -8.226 c -0.807 -0.334 -1.435 -0.962 -1.769 -1.769 c -0.334 -0.807 -0.333 -1.695 0 -2.501 l 4.271 -10.313 c 0.69 -1.665 2.606 -2.458 4.27 -1.769 c 3.39 1.403 7.108 0.665 9.703 -1.93 s 3.334 -6.313 1.93 -9.703 c -0.689 -1.665 0.104 -3.58 1.769 -4.27 L 32.505 0.25 c 1.668 -0.69 3.58 0.104 4.27 1.768 C 38.179 5.408 41.331 7.514 45 7.514 c 3.669 0 6.821 -2.106 8.225 -5.497 c 0.689 -1.665 2.606 -2.459 4.27 -1.768 l 10.313 4.271 c 1.664 0.69 2.457 2.605 1.768 4.27 c -1.404 3.39 -0.664 7.108 1.931 9.703 c 2.594 2.594 6.313 3.333 9.702 1.93 c 0.807 -0.334 1.694 -0.334 2.501 0 c 0.808 0.334 1.436 0.962 1.769 1.769 l 4.272 10.313 c 0.688 1.665 -0.104 3.58 -1.769 4.27 c -3.391 1.404 -5.496 4.556 -5.496 8.226 c 0 3.67 2.105 6.821 5.496 8.226 l 0 0 c 1.664 0.689 2.457 2.604 1.769 4.269 l -4.272 10.314 c -0.691 1.665 -2.604 2.457 -4.27 1.768 c -3.391 -1.405 -7.109 -0.664 -9.702 1.931 c -2.595 2.595 -3.335 6.313 -1.931 9.702 c 0.689 1.664 -0.104 3.579 -1.768 4.27 l -10.313 4.272 c -1.668 0.692 -3.581 -0.105 -4.27 -1.769 c -1.404 -3.391 -4.556 -5.496 -8.225 -5.496 c -3.67 0 -6.822 2.105 -8.226 5.496 C 36.254 89.239 35.034 89.999 33.75 89.999 z M 12.267 66.871 c 2.807 0 5.528 1.108 7.641 3.222 c 3.177 3.178 4.083 7.73 2.363 11.882 c -0.129 0.313 -0.129 0.657 0 0.971 c 0.13 0.313 0.373 0.556 0.686 0.686 l 10.313 4.272 c 0.644 0.268 1.388 -0.042 1.656 -0.687 c 1.72 -4.151 5.58 -6.73 10.073 -6.73 c 0 0 0 0 0 0 c 4.494 0 8.353 2.579 10.073 6.73 c 0.267 0.645 1.01 0.954 1.657 0.687 l 10.313 -4.272 c 0.646 -0.268 0.953 -1.011 0.686 -1.656 c -1.72 -4.152 -0.813 -8.705 2.363 -11.883 c 3.179 -3.176 7.729 -4.083 11.883 -2.363 c 0.647 0.268 1.389 -0.041 1.656 -0.686 l 4.272 -10.313 c 0.267 -0.646 -0.041 -1.389 -0.687 -1.656 c -4.151 -1.72 -6.73 -5.579 -6.73 -10.073 s 2.579 -8.354 6.73 -10.073 c 0.646 -0.268 0.953 -1.011 0.687 -1.657 l -4.272 -10.313 c -0.13 -0.313 -0.373 -0.557 -0.686 -0.687 c -0.315 -0.129 -0.659 -0.128 -0.971 0 c -4.153 1.72 -8.705 0.814 -11.882 -2.363 c -3.178 -3.178 -4.084 -7.731 -2.364 -11.883 c 0.268 -0.646 -0.04 -1.389 -0.686 -1.656 L 56.729 2.097 c -0.648 -0.269 -1.39 0.04 -1.656 0.686 C 53.354 6.935 49.494 9.514 45 9.514 c -4.494 0 -8.354 -2.579 -10.074 -6.731 c -0.268 -0.646 -1.011 -0.952 -1.656 -0.686 L 22.958 6.369 c -0.646 0.268 -0.954 1.011 -0.687 1.656 c 1.72 4.152 0.814 8.705 -2.363 11.883 c -3.178 3.177 -7.729 4.083 -11.883 2.363 c -0.646 -0.268 -1.389 0.041 -1.656 0.687 L 2.097 33.271 c -0.13 0.313 -0.13 0.657 0 0.97 c 0.129 0.313 0.373 0.556 0.686 0.686 c 4.152 1.72 6.731 5.58 6.731 10.074 c 0 4.494 -2.58 8.353 -6.731 10.073 c -0.646 0.268 -0.954 1.011 -0.686 1.656 l 4.271 10.313 c 0.268 0.645 1.01 0.953 1.656 0.686 C 9.416 67.152 10.853 66.871 12.267 66.871 z M 45 64.629 c -10.823 0 -19.629 -8.806 -19.629 -19.629 S 34.177 25.371 45 25.371 S 64.629 34.177 64.629 45 S 55.823 64.629 45 64.629 z M 45 27.371 c -9.721 0 -17.629 7.908 -17.629 17.629 S 35.279 62.629 45 62.629 S 62.629 54.721 62.629 45 S 54.721 27.371 45 27.371 z" />
+            </g>
+        </svg>
+    </button>
+</div>
+
+<div style="position:relative">
+  <div class="tabs" id="tabsBar"></div>
+  <div class="plus" id="plusBtn" title="Add tab">+</div>
+  
+  <div id="addMenu" class="add-menu" style="display:none">
+    <div class="menu-column">
+      <input id="addSearch" class="search" placeholder="Search templates..." />
+      <div id="menuList"></div>
+      <button id="closeMenu" class="btn-secondary" style="width:100%; margin-top:15px">Close</button>
+    </div>
+    <div class="menu-column" id="subMenuList"></div>
+  </div>
+</div>
+
+<div class="content" id="contentArea"></div>
+
+<div class="bottom">
+  <button id="exportBtn" class="btn-primary">Export & Email</button>
+  <button id="clearBtn" class="btn-white">Clear All</button>
+</div>
+
+<script>
+const EMAIL_ADDRESSES = { sky: "will_o13@hotmail.com" };
+const $ = (sel, root=document) => root.querySelector(sel);
+
+/* --- COLLECTIONS CONFIG --- */
+const COLLECTIONS = {
+    "Bedrooms": ["Bedroom 1", "Bedroom 2", "Bedroom 3", "Bedroom 4", "Bedroom 5"],
+    "Kitchen": ["Family/Meals/Kitchen"],
+    "Formal Living": ["Lounge", "Formal Dining"],
+    "Wet Rooms": ["Bathroom", "Powder Room", "Laundry Room"],
+    "Outdoor": ["Living", "Outdoor Dining", "Other"],
+    "Entrance": ["Verandah/Porch", "Entrance"],
+    "Other": ["Study", "Rumpus/Sunroom"]
+};
+
+/* --- SETTINGS & PERSISTENCE --- */
+let settings = { syncFloorPlan: false, lastFloorPlan: 'Tile', theme: 'System' };
+let tabTypes={}; let tabs=[]; let activeTabId=null;
+
+function applyTheme(mode) {
+    if (mode === 'Dark' || (mode === 'System' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.body.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+    }
+}
+
+function loadSettings() {
+    const saved = localStorage.getItem('infoSheetSettings');
+    if (saved) {
+        settings = JSON.parse(saved);
+        if (!settings.theme) settings.theme = 'System';
+    }
+    $('#syncToggle').checked = settings.syncFloorPlan;
+    $('#themeSelect').value = settings.theme;
+    applyTheme(settings.theme);
+}
+
+function saveSettings() {
+    localStorage.setItem('infoSheetSettings', JSON.stringify(settings));
+}
+
+$('#themeSelect').onchange = (e) => {
+    settings.theme = e.target.value;
+    applyTheme(settings.theme);
+    saveSettings();
+};
+
+/* --- HELPER FUNCTIONS --- */
+function getFloorPlanSelect() {
+    const val = settings.syncFloorPlan ? settings.lastFloorPlan : 'Tile';
+    const sel = document.createElement('div');
+    sel.className = 'field';
+    sel.innerHTML = `<label>Floor Plan</label>
+        <select data-field-name="Floor Plan">
+            <option value="Tile" ${val==='Tile'?'selected':''}>Tile</option>
+            <option value="Carpet" ${val==='Carpet'?'selected':''}>Carpet</option>
+            <option value="Timber" ${val==='Timber'?'selected':''}>Timber</option>
+        </select>`;
+    sel.querySelector('select').addEventListener('change', (e) => {
+        if (settings.syncFloorPlan) {
+            settings.lastFloorPlan = e.target.value;
+            saveSettings();
+        }
+    });
+    return sel;
+}
+
+function getOutsideSelect() {
+    const sel = document.createElement('div');
+    sel.className = 'field';
+    sel.innerHTML = `<label>Outside</label>
+        <select data-field-name="Outside">
+            <option value="Exposed">Exposed</option>
+            <option value="Covered">Covered</option>
+        </select>`;
+    return sel;
+}
+
+function makeCheckboxes(items, prefix="") {
+    return items.map(n => `<label><input type="checkbox" data-field-name="${prefix}${n}"> ${n}</label>`).join('<br>');
+}
+
+/* --- TABS SYSTEM --- */
+function uid(p='id'){return p+'_'+Math.random().toString(36).slice(2,9);}
+function registerTabType(name,factory){tabTypes[name]={factory};}
+
+function renderTabs(){
+  const bar=$('#tabsBar'); bar.innerHTML='';
+  tabs.forEach(t=>{
+    const el=document.createElement('div');
+    el.className='tab'+(t.id===activeTabId?' active':'');
+    el.textContent=t.title;
+    el.onclick=()=>setActiveTab(t.id);
+    if(!t.locked){
+      const c=document.createElement('span'); c.textContent=' ×'; c.style.marginLeft='10px';
+      c.onclick=e=>{e.stopPropagation(); closeTab(t.id);}; el.appendChild(c);
+    }
+    bar.appendChild(el);
+  });
+}
+
+function addTabInstance(title,type,options={}){
+  const id=uid('tab'); const t={id,title,type,locked:!!options.locked};
+  tabs.push(t); renderTabs();
+  const wrapper=document.createElement('div'); wrapper.id='content_'+id; wrapper.style.display='none';
+  $('#contentArea').appendChild(wrapper);
+  const fields=document.createElement('div'); fields.className='tab-fields';
+  wrapper.innerHTML = `<h2 style="margin-top:0">${title}</h2>`; wrapper.appendChild(fields);
+  if(tabTypes[type]) tabTypes[type].factory(fields, t);
+  setActiveTab(id);
+}
+
+function setActiveTab(id){
+  activeTabId=id; renderTabs();
+  tabs.forEach(t=>{ const w=$('#content_'+t.id); if(w) w.style.display=(t.id===id)?'block':'none'; });
+}
+
+function closeTab(id){
+  const i=tabs.findIndex(t=>t.id===id); if(i>-1&&!tabs[i].locked) tabs.splice(i,1);
+  const w=$('#content_'+id); if(w) w.remove();
+  if(activeTabId===id) tabs.length ? setActiveTab(tabs[0].id) : (($('#contentArea').innerHTML=''),renderTabs());
+  else renderTabs();
+}
+
+/* --- ROOM DEFINITIONS --- */
+
+registerTabType('Overall Info', (container, tab) => {
+  container.innerHTML = `
+    <div class="field-row">
+      <div class="field"><label>REA</label><input type="text" data-field-name="REA"></div>
+      <div class="field"><label>Contact</label><input type="text" data-field-name="Contact"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>REA Address</label><input type="text" data-field-name="REA Address"></div>
+      <div class="field"><label>Phone</label><input type="tel" data-field-name="REA Phone"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Installation Date</label><input type="text" data-field-name="Installation Date"></div>
+      <div class="field"><label>Photography Date</label><input type="text" data-field-name="Photography Date"></div>
+    </div>
+    <div class="field"><label>Client's Name</label><input type="text" data-field-name="Client's Name"></div>
+    <div class="field"><label>Address</label><input type="text" data-field-name="Address"></div>
+    <div class="field-row">
+      <div class="field"><label>Phone</label><input type="text" data-field-name="Phone"></div>
+      <div class="field"><label>Email</label><input type="text" data-field-name="Email"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Price/Auction</label><input type="text" data-field-name="Price/Auction"></div>
+      <div class="field"><label>Date of Auction</label><input type="text" data-field-name="Date of Auction"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>PROPERTY TYPE</label><select data-field-name="PROPERTY TYPE"><option>House</option><option>T/house</option><option>Apt</option></select></div>
+      <div class="field"><label>ARTWORK</label><select data-field-name="ARTWORK"><option>Yes</option><option>No</option></select></div>
+      <div class="field"><label>Access</label><select data-field-name="Access"><option value="steps">Steps</option><option value="stairs">Stairs</option><option value="limited_parking">Limited Parking</option></select></div>
+    </div>
+    <label>Project Roles</label>
+    <table>
+      <tr><td style="font-weight:bold">LEAD STYLIST</td><td contenteditable="true" data-field-name="Lead Stylist"></td><td contenteditable="true" data-field-name="Lead Stylist Date"></td></tr>
+      <tr><td></td><td><strong>TEAM MEMBER</strong></td><td><strong>DATE</strong></td></tr>
+      ${['QUOTE BY','SELECTION BY','INSTALLATION BY','REMOVALIST','PICK UP BY','KEYS RETURNED BY'].map(l=>`
+        <tr><td>${l}</td><td contenteditable="true" data-field-name="${l} Name"></td><td contenteditable="true" data-field-name="${l} Date"></td></tr>
+      `).join('')}
+    </table>
+    <div style="margin-top:20px">
+      <div class="field"><label>Quote Amount</label><input type="text" data-field-name="Quote Amount"></div>
+      <div class="field-row">
+        <div class="field"><label>Proposal Sent</label><input type="text" data-field-name="Proposal Sent"></div>
+        <div class="field"><label>Accepted</label><input type="text" data-field-name="Accepted"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Invoice Sent</label><input type="text" data-field-name="Invoice Sent"></div>
+        <div class="field"><label>PAID</label><input type="text" data-field-name="PAID"></div>
+      </div>
+      <div class="field"><label>BUMP OUT DUE</label><input type="text" data-field-name="BUMP OUT DUE"></div>
+      <div class="field"><label>Weekly Rate</label><input type="text" data-field-name="Weekly Rate" value="$"></div>
+      <div class="field">
+        <label><input type="checkbox" id="ext_${tab.id}"> Extended?</label>
+        <div id="ext_box_${tab.id}" class="conditional-section"><label>How long?</label><input type="text" data-field-name="How long?"></div>
+      </div>
+    </div>
+  `;
+  container.querySelector(`#ext_${tab.id}`).onchange=e=>{$(`#ext_box_${tab.id}`).style.display=e.target.checked?'block':'none';};
+});
+
+const bedroomItems=['Bedhead','Bedside Table/s','Lamp/s','Occasional Chair','Side Table','Bed Bench','Console','Rug','Study Desk/Chair','Artwork/Mirror','Accessories'];
+
+// Bedroom 1
+registerTabType('Bedroom 1', (c, t) => {
+    c.appendChild(getFloorPlanSelect());
+    c.innerHTML += `
+      <div class="field"><label>Bed</label><select data-field-name="Bed"><option>King</option><option>Queen</option><option>Double</option><option>Single</option></select></div>
+      <div class="field"><label>Linen Package</label><select data-field-name="Linen Package"><option selected>No linen Package</option><option>King</option><option>Queen</option><option>Double</option><option>Single</option></select></div>
+      <div class="field">${makeCheckboxes(bedroomItems)}</div>
+      <div class="field-row">
+        <div class="field">
+          <label>WIR?</label><select class="trigger" data-target="wir_${t.id}" data-field-name="WIR?"><option value="No">No</option><option value="Yes">Yes</option></select>
+          <div id="wir_${t.id}" class="conditional-section">${makeCheckboxes(['Accessories','Clothes','Baskets','Ottoman','Mirror'], 'WIR ')}</div>
+        </div>
+        <div class="field">
+          <label>Ensuite?</label><select class="trigger" data-target="ens_${t.id}" data-field-name="Ensuite?"><option value="No">No</option><option value="Yes">Yes</option></select>
+          <div id="ens_${t.id}" class="conditional-section">${makeCheckboxes(['Linen','Accessories','Stool','Plant','Shower Nook','Hand Towel'], 'Ens ')}
+            <label>No. of Rails</label><input type="number" data-field-name="No. of Rails" value="0">
+          </div>
+        </div>
+      </div>
+      <div class="field"><label>Notes</label><input type="text" data-field-name="Notes"></div>
+    `;
+    c.querySelectorAll('.trigger').forEach(s=>{ s.onchange=e=>{$(`#${s.dataset.target}`).style.display=e.target.value==='Yes'?'block':'none';}; });
+});
+
+// Other Bedrooms
+['Bedroom 2', 'Bedroom 3', 'Bedroom 4', 'Bedroom 5'].forEach(b => {
+    registerTabType(b, (c, t) => {
+        c.appendChild(getFloorPlanSelect());
+        c.innerHTML += `<div class="field"><label>Bed</label><select data-field-name="Bed"><option>King</option><option>Queen</option><option>Double</option><option>Single</option></select></div>
+          <div class="field"><label>Linen Package</label><select data-field-name="Linen Package"><option selected>No linen Package</option><option>King</option><option>Queen</option><option>Double</option><option>Single</option></select></div>
+          <div class="field">${makeCheckboxes(bedroomItems)}</div>
+          <div class="field"><label>Notes</label><input type="text" data-field-name="Notes"></div>`;
+    });
+});
+
+registerTabType('Study', (c)=>{
+    c.appendChild(getFloorPlanSelect());
+    c.innerHTML += `<div class="field">${makeCheckboxes(['Desk','Chair','Rug','Lamp','Artwork','Accessories'])}</div>
+    <div class="field"><label>Notes</label><input type="text" data-field-name="Notes"></div>`;
+});
+
+registerTabType('Bathroom', (c)=>{
+    c.appendChild(getFloorPlanSelect());
+    c.innerHTML += `<div class="field">${makeCheckboxes(['Linen','Accessories','Stool','Plant'])}</div>
+    <div class="field"><label>No. of rails</label><input type="number" data-field-name="No. of rails" value="0"></div>
+    <div class="field"><label>Notes</label><input type="text" data-field-name="Notes"></div>`;
+});
+
+registerTabType('Powder Room', (c)=>{
+    c.appendChild(getFloorPlanSelect());
+    c.innerHTML += `<div class="field">${makeCheckboxes(['Hand Towel','Accessories','Small Plant','Soap Dispenser'])}</div>
+    <div class="field"><label>Notes</label><input type="text" data-field-name="Notes"></div>`;
+});
+
+registerTabType('Laundry Room', (c)=>{
+    c.appendChild(getFloorPlanSelect());
+    c.innerHTML += `<div class="field">${makeCheckboxes(['Towel','Laundry Basket','Bench Accessories','Shelf Accessories','Plant','Bench Seat','Accessories'])}</div>
+    <div class="field"><label>Notes</label><input type="text" data-field-name="Notes"></div>`;
+});
+
+// Living Tabs (Outdoor select)
+registerTabType('Living', (c)=>{
+    c.appendChild(getOutsideSelect());
+    c.innerHTML += `<div class="field">${makeCheckboxes(['Sofa Setting','Plants','Accessories','Cushions'])}</div>
+    <div class="field"><label>Notes</label><input type="text" data-field-name="Notes"></div>`;
+});
+
+registerTabType('Outdoor Dining', (c)=>{
+    c.appendChild(getOutsideSelect());
+    c.innerHTML += `<div class="field">${makeCheckboxes(['Table Setting','Accessories'])}</div>
+    <div class="field"><label>Notes</label><input type="text" data-field-name="Notes"></div>`;
+});
+
+registerTabType('Other', (c)=>{
+    c.appendChild(getOutsideSelect());
+    c.innerHTML += `<div class="field">${makeCheckboxes(['3 Piece Setting','Bench Seat','Fire Pit','Sunbeds'])}</div>
+    <div class="field"><label>Notes</label><input type="text" data-field-name="Notes"></div>`;
+});
+
+// Special Tabs
+registerTabType('Verandah/Porch', (c)=>{
+    c.innerHTML += `<div class="field"><label>Type</label><select data-field-name="Type"><option>Veranda</option><option>Porch</option></select></div>`;
+    c.appendChild(getOutsideSelect());
+    c.innerHTML += `<div class="field">${makeCheckboxes(['Outdoor 3 Piece Setting','Accessories','Cushions'])}</div>
+    <div class="field"><label>Notes</label><input type="text" data-field-name="Notes"></div>`;
+});
+
+registerTabType('Rumpus/Sunroom', (c)=>{
+    c.innerHTML += `<div class="field"><label>Type</label><select data-field-name="Type"><option>Rumpus</option><option>Sunroom</option></select></div>`;
+    c.appendChild(getFloorPlanSelect());
+    c.innerHTML += `<div class="field">${makeCheckboxes(['Sofa','Occasional Chair','Coffee Table','Entertainment Unit','Console','Side Table','Bar Table Setting','Study Desk/Chair','Rug','Floor Lamp','Plant w/ Pot','Artwork/Mirror','Cushions','Accessories'])}</div>
+    <div class="field"><label>Notes</label><input type="text" data-field-name="Notes"></div>`;
+});
+
+registerTabType('Entrance', (c)=>{
+    c.appendChild(getFloorPlanSelect());
+    c.innerHTML += `<div class="field">${makeCheckboxes(['Console','Bench Seat','Art/Mirror','Accessories'])}</div>
+    <div class="field"><label>Notes</label><input type="text" data-field-name="Notes"></div>`;
+});
+
+// Lounge & Dining Room Only (Indoors)
+registerTabType('Lounge', (c)=>{
+    c.appendChild(getFloorPlanSelect());
+    c.innerHTML += `<div class="field">${makeCheckboxes(["Sofa", "Occasional Chair", "Coffee Table", "Entertainment Unit", "Console", "Side Table", "Rug", "Floor Lamp", "Plant w/ Pot", "Artwork/Mirror", "Accessories/Cushions"])}</div>
+    <div class="field"><label>Notes</label><input type="text" data-field-name="Notes"></div>`;
+});
+
+registerTabType('Formal Dining', (c)=>{
+    c.appendChild(getFloorPlanSelect());
+    c.innerHTML += `<div class="field">${makeCheckboxes(['Dining Table & Chairs','Buffet/Console','Rug','Lamp','Artwork/Mirror','Accessories'])}</div>
+    <div class="field"><label>Notes</label><input type="text" data-field-name="Notes"></div>`;
+});
+
+// Family/Meals/Kitchen
+registerTabType('Family/Meals/Kitchen', (c)=>{
+    c.appendChild(getFloorPlanSelect());
+    
+    const kitchen = document.createElement('div');
+    kitchen.innerHTML = `<h3 style="margin-top:25px; border-bottom:1px solid var(--border); padding-bottom:10px;">Kitchen</h3>
+        <div class="field">${makeCheckboxes(['Bench Stools', 'Accessories', 'Clock', 'Artwork', 'WIP Accessories'], "Kitchen ")}</div>
+        <div class="field"><label>Kitchen Notes:</label><input type="text" data-field-name="Kitchen Notes"></div>`;
+    c.appendChild(kitchen);
+
+    const row = document.createElement('div'); row.className = 'field-row'; row.style.marginTop = '25px';
+    
+    const mealsCol = document.createElement('div'); mealsCol.className = 'field';
+    mealsCol.innerHTML = `<h3>Meals</h3>
+        ${makeCheckboxes(['Dining Table & Chairs', 'Artwork/Mirror', 'Console', 'Accessories'], "Meals ")}
+        <div class="field" style="margin-top:15px"><label>Notes:</label><input type="text" data-field-name="Meals Notes"></div>`;
+    
+    const familyCol = document.createElement('div'); familyCol.className = 'field';
+    familyCol.innerHTML = `<h3>Family</h3>
+        ${makeCheckboxes(["Sofa", "Occasional Chair", "Coffee Table", "Entertainment Unit", "Console", "Side Table", "Rug", "Floor Lamp", "Plant w/ Pot", "Artwork/Mirror", "Accessories/Cushions"], "Family ")}
+        <div class="field" style="margin-top:15px"><label>Notes:</label><input type="text" data-field-name="Family Notes"></div>`;
+    
+    row.appendChild(mealsCol); row.appendChild(familyCol); c.appendChild(row);
+});
+
+/* --- INITIALIZATION & EVENTS --- */
+$('#plusBtn').onclick=()=>{ $('#addMenu').style.display='flex'; refreshMenuList(); };
+$('#closeMenu').onclick=()=>{ $('#addMenu').style.display='none'; $('#subMenuList').style.display='none'; };
+
+function refreshMenuList(){
+  const l=$('#menuList'); l.innerHTML='';
+  const existingTabs = tabs.map(t=>t.type);
+
+  Object.keys(COLLECTIONS).forEach(name=>{
+    const collectionItems = COLLECTIONS[name];
+    const isFull = collectionItems.every(item => existingTabs.includes(item));
+
+    if(isFull) return;
+
+    const i=document.createElement('div'); i.className='menu-item';
+    i.innerHTML = `<span>${name}</span> <span style="font-size:20px">&rsaquo;</span>`;
+    i.onclick=()=>showSubMenu(name, i);
+    l.appendChild(i);
+  });
+}
+
+function showSubMenu(collectionName, triggerEl) {
+    const sub = $('#subMenuList');
+    sub.innerHTML = ''; sub.style.display = 'block';
+    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+    triggerEl.classList.add('active');
+    
+    const existing = tabs.map(t => t.type);
+
+    COLLECTIONS[collectionName].forEach(typeName => {
+        if(existing.includes(typeName)) return;
+
+        const i = document.createElement('div'); i.className = 'menu-item';
+        i.textContent = typeName;
+        i.onclick = () => {
+            addTabInstance(typeName, typeName);
+            $('#addMenu').style.display = 'none';
+            sub.style.display = 'none';
+        };
+        sub.appendChild(i);
+    });
+}
+
+$('#openSettings').onclick=()=>$('#settingsModal').style.display='flex';
+$('#closeSettings').onclick=()=>$('#settingsModal').style.display='none';
+$('#syncToggle').onchange=e=>{ settings.syncFloorPlan=e.target.checked; saveSettings(); };
+
+$('#exportBtn').onclick=()=>{
+    const allData = [];
+    tabs.forEach(t => {
+        const wrap = $('#content_'+t.id);
+        wrap.querySelectorAll('input, select').forEach(i => {
+            const val = i.type==='checkbox' ? (i.checked?'Yes':'No') : i.value;
+            allData.push(`${t.title} > ${i.dataset.fieldName}: ${val}`);
+        });
+        wrap.querySelectorAll('td[contenteditable="true"]').forEach(c => {
+            allData.push(`${t.title} > ${c.dataset.fieldName}: ${c.textContent}`);
+        });
+    });
+    window.location.href=`mailto:${EMAIL_ADDRESSES.sky}?subject=Property Export&body=${encodeURIComponent(allData.join('\n'))}`;
+};
+
+$('#clearBtn').onclick=()=>$('#clearModal').style.display='flex';
+$('#modalCancel').onclick=()=>$('#clearModal').style.display='none';
+$('#modalOK').onclick=()=>{ tabs=[]; $('#contentArea').innerHTML=''; addTabInstance('Overall Info','Overall Info',{locked:true}); $('#clearModal').style.display='none'; };
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    if (settings.theme === 'System') applyTheme('System');
+});
+
+loadSettings();
+addTabInstance('Overall Info','Overall Info',{locked:true});
+</script>
+</body>
+</html>
